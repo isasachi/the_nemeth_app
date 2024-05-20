@@ -1,0 +1,111 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model attendance {
+  attendance_id String          @id @db.Uuid
+  date          DateTime        @db.Date
+  value         attendance_enum
+  student_id    String          @db.Uuid
+  classroom_id  String          @db.Uuid
+  classrooms    classrooms      @relation(fields: [classroom_id], references: [classroom_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_attendance_classroom")
+  students      students        @relation(fields: [student_id], references: [student_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_attendance_student")
+  @@unique([date, student_id])
+}
+
+model classrooms {
+  classroom_id String       @id @db.Uuid
+  name         String
+  level        String
+  days         String[]
+  time         String
+  schedule     DateTime[]   @db.Date
+  teacher_id   String       @db.Uuid
+  attendance   attendance[]
+  teachers     teachers     @relation(fields: [teacher_id], references: [teacher_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_classroom_teacher")
+  grading      grading[]
+  students     students[]
+}
+
+model grading {
+  grading_id      String     @id @db.Uuid
+  period          String
+  year            String
+  listening       Int?
+  reading         Int?
+  writing         Int?
+  speaking        Int?
+  grammar_vocab   Int?
+  project         Int?
+  conversation    Int?
+  teacher_comment String
+  student_id      String     @db.Uuid
+  classroom_id    String     @db.Uuid
+  classrooms      classrooms @relation(fields: [classroom_id], references: [classroom_id], onDelete: NoAction, onUpdate: NoAction, map: "fk-grading_classroom")
+  students        students   @relation(fields: [student_id], references: [student_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_grading_student")
+}
+
+model students {
+  student_id   String       @id @db.Uuid
+  first_name   String
+  last_name    String
+  email        String
+  phone        String
+  birth_date   DateTime     @db.Date
+  country      String
+  gender       gender_enum
+  address      String
+  parent_name  String
+  parent_phone String
+  user_id      String       @unique(map: "fk_student_user") @db.Uuid
+  classroom_id String?      @db.Uuid
+  attendance   attendance[]
+  grading      grading[]
+  classrooms   classrooms?  @relation(fields: [classroom_id], references: [classroom_id], onDelete: NoAction, onUpdate: NoAction, map: "fk_student_classroom")
+}
+
+model teachers {
+  teacher_id String       @id @db.Uuid
+  first_name String
+  last_name  String
+  email      String
+  phone      String
+  birth_date DateTime     @db.Date
+  country    String
+  gender     gender_enum
+  address    String
+  user_id    String       @unique(map: "fk_teacher_user") @db.Uuid
+  classrooms classrooms[]
+}
+
+model users {
+  user_id   String    @id @db.Uuid
+  user_name String
+  email     String
+  password  String
+  role      user_role
+}
+
+enum attendance_enum {
+  present
+  absent
+  justified_absent @map("justified absent")
+  tardy
+}
+
+enum gender_enum {
+  male
+  female
+}
+
+enum user_role {
+  coordinator
+  board
+  teacher
+  student
+}
