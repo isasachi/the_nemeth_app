@@ -11,13 +11,13 @@ export async function GET(request: NextRequest) {
       classroom_id: classroom_id?.toString()
     },
     include: {
-      students: {
+      student: {
         select: {
           first_name: true,
           last_name: true
         }
       },
-      classrooms: {
+      classroom: {
         select: {
           name: true
         }

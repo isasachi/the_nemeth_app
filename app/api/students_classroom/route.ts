@@ -6,16 +6,22 @@ export async function GET(request: NextRequest) {
   const url = new URL(request.nextUrl)
   const classroom_id = url.searchParams.get("classroom_id");
 
-  const students = await prisma.students.findMany({
+  const students = await prisma.classroomStudents.findMany({
     where: {
       classroom_id: classroom_id?.toString()
     },
-    select: {
-      student_id: true,
-      first_name: true,
-      last_name: true
-    }
+    include: {
+      student: {
+        select: {
+          student_id: true,
+          first_name: true,
+          last_name: true
+        }
+      }
+    }   
   });
+
+  console.log(students);
 
   return NextResponse.json(students)
 }

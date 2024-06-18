@@ -7,7 +7,7 @@ import AttendanceView from "@/app/components/attendance-view";
 import AddNewAttendanceButton from "@/app/components/new-attendance-button";
 
 export default function Page() {
-    const teacher_id = '410c4cad-94da-4680-945d-d4a77ecb924d'
+    const teacher_id = 'b212f18a-e3e7-4352-ac4b-d3143aaa6f55'
 
     const [classroom, setClassroom] = useState<any>()
     const [selectedStudentId, setSelectedStudentId] = useState<string | null>(null);

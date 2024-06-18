@@ -1,6 +1,6 @@
 import { Open_Sans } from "next/font/google";
 import "@/app/globals.css";
-import Sidebar from "../components/sidebar";
+import Sidebar from "../../components/sidebar";
 
 const open = Open_Sans({ subsets: ["latin"] });
 

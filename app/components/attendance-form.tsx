@@ -7,7 +7,7 @@ import ValueSelectForm from './select-value-form';
 import CustomRadioButton from './custom-radio-button';
 
 const AttendanceForm: React.FC = () => {
-  const teacher_id = '410c4cad-94da-4680-945d-d4a77ecb924d';
+  const teacher_id = 'b212f18a-e3e7-4352-ac4b-d3143aaa6f55';
     
   const [classroom, setClassroom] = useState<any>();
   const [selectedOption, setSelectedOption] = useState<string>();
@@ -25,9 +25,10 @@ const AttendanceForm: React.FC = () => {
     }
   }
 
+
   return (
     <div className='p-4 flex flex-col text-sm md:max-w-md md:mx-auto'>
-       <ValueSelectForm teacher_id={teacher_id} value={classroom} setValue={setClassroom} fetchValuesString='/api/names_id?teacher_id=' fetchDataString='/api/classroom?classroom_id=' />
+       <ValueSelectForm teacher_id={teacher_id} value={classroom} setValue={setClassroom} fetchValuesString='/api/names_id?teacher_id=' fetchDataString='/api/classroom_students?classroom_id=' />
       <div className='mt-2'>
           <h3 className='font-semibold text-lg pb-2'>{classroom?.name}</h3>
           <form action={handleAttendanceSubmission} className='flex flex-col space-y-3'>
@@ -40,10 +41,10 @@ const AttendanceForm: React.FC = () => {
             </div>
             <label>Select students</label>
             <div className='flex flex-col space-y-1'>
-            {classroom?.students?.map((item: any) => (
+            {classroom?.classroomStudents?.map((item: any) => (
             <label>
               <input type='checkbox' name='student_id' value={item.student_id} className='w-5 h-5 mr-1 accent-violet-500' />
-              {`${item.first_name} ${item.last_name}`}
+              {`${item.student.first_name} ${item.student.last_name}`}
             </label>
             ))}
             </div>

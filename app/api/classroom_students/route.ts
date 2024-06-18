@@ -11,17 +11,21 @@ export async function GET(request: NextRequest) {
       classroom_id: classroom_id?.toString()
     },
     include: {
-      students: {
-        select: {
-          student_id: true,
-          first_name: true,
-          last_name: true
+      classroomStudents: {
+        include: {
+          student: {
+            select: {
+              student_id: true,
+              first_name: true,
+              last_name: true
+            }
+          }
         }
       }
-    }
-  })
+    }   
+  });
 
   console.log(classroom);
- 
-  return NextResponse.json(classroom);
+
+  return NextResponse.json(classroom)
 }

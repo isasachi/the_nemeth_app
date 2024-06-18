@@ -6,6 +6,9 @@ import { redirect } from 'next/navigation';
 import prisma from '../db/prisma-client';
 import { v4 as uuidv4 } from 'uuid';
 import { Prisma } from '@prisma/client';
+import bcrypt from 'bcryptjs';
+import { signIn } from 'next-auth/react';
+import { format } from 'path';
 
 const createClassroomSchema = z.object({
   classroom_id: z.string(),
@@ -40,8 +43,10 @@ export async function createClassroom(formData: FormData) {
     students: formData.getAll('students')
   })
 
+  console.log(students)
+
   try {
-    const user = await prisma.classrooms.create({
+    const classroom = await prisma.classrooms.create({
       data: {
         classroom_id: classroom_id,
         name: name,
@@ -51,20 +56,20 @@ export async function createClassroom(formData: FormData) {
         schedule: schedule.split(',').map(date => {
           return new Date(date)
         }),
-        teacher_id: teacher_id
-      }
+        teacher_id: teacher_id,
+        }
     })
 
-    students.map(async (student_id:string) => {
-      const student = await prisma.students.update({
-        where: {
-          student_id: student_id
-        },
-        data: {
-          classroom_id: classroom_id
-        }
+    const classroomStudents = await Promise.all(
+      students.map(async student_id => {
+        return prisma.classroomStudents.create({
+          data: {
+            classroom_id: classroom_id,
+            student_id: student_id
+          }
+        })
       })
-    })
+    )
 
   } catch(error) {
     console.log("Error during process", error)
@@ -212,4 +217,81 @@ export async function sendGrading(formData: FormData) {
   revalidatePath('/dashboard/grading');
   revalidatePath('/');
   redirect('/dashboard/grading');
+}
+
+const registerSchema = z.object({
+  user_name: z.string(),
+  email: z.string(),
+  password: z.string(),
+  role: z.enum(['coordinator', 'board', 'teacher', 'student'])
+        .or(z.literal(''))
+        .transform((e) => e === '' ? null : e)
+        .nullable()
+})
+
+export async function register(formData: FormData) {
+
+  const {
+    user_name,
+    email,
+    password,
+    role
+  } = registerSchema.parse({
+    user_name: formData.get('username'),
+    email: formData.get('email'),
+    password: formData.get('password'),
+    role: formData.get('role')
+  });
+
+  const hashedPassword = bcrypt.hashSync(password, 10);
+
+  try {
+    const newUser = await prisma.users.create({
+      data: {
+        user_name,
+        email,
+        password: hashedPassword,
+        role
+      }
+    })
+
+  } catch (error: any) {
+    if (error.code === 'P2002') {
+      console.log('An error has ocurred', error);
+      return { error: 'User already exists' }
+    }
+    console.log('An error has ocurred', error);
+    return {error: "Couldn't register new user"}
+  }
+
+  revalidatePath('/register');
+  revalidatePath('/');
+  redirect('/login');
+
+}
+
+const loginSchema = z.object({
+  username: z.string(),
+  password: z.string()
+})
+
+export async function login(formData: FormData) {
+  try {
+    const { username, password } = loginSchema.parse({
+      username: formData.get('username'),
+      password: formData.get('password')
+    })
+    const signin = await signIn('credentials', { 
+      username,
+      password,
+      redirect: false
+     })
+  } catch (error: any) {
+    console.error(error)
+    }
+
+  revalidatePath('/login')
+  revalidatePath('/')
+  redirect('/dashboard')
+
 }

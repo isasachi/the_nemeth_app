@@ -9,7 +9,7 @@ import toast from "react-hot-toast"
 export default function Grading() {
     const [classroom, setClassroom] = useState<any>();
 
-    const teacher_id = '410c4cad-94da-4680-945d-d4a77ecb924d';
+    const teacher_id = 'b212f18a-e3e7-4352-ac4b-d3143aaa6f55';
 
     const handleGradingSubmission = async (formData: FormData) => {
         const res = await sendGrading(formData);
@@ -22,7 +22,7 @@ export default function Grading() {
     
     return (
         <div className='p-4 flex flex-col text-sm md:max-w-md md:mx-auto'>
-            <ValueSelectForm teacher_id={teacher_id} value={classroom} setValue={setClassroom} fetchValuesString="/api/names_id?teacher_id=" fetchDataString="/api/classroom?classroom_id="/>
+            <ValueSelectForm teacher_id={teacher_id} value={classroom} setValue={setClassroom} fetchValuesString="/api/names_id?teacher_id=" fetchDataString="/api/classroom_students?classroom_id="/>
             <h3 className='font-semibold text-lg py-2'>{classroom?.name}</h3>
             <form action={handleGradingSubmission} className='flex flex-col space-y-3' >
             <input type="hidden" name="grading_id" value={uuidv4()} />
@@ -38,10 +38,10 @@ export default function Grading() {
             </div>
             <label>Select a student</label>
             <div className='flex flex-col space-y-1'>
-            {classroom?.students?.map((item: any) => (
+            {classroom?.classroomStudents?.map((item: any) => (
             <label>
               <input type='radio' name='student_id' value={item.student_id} className='mr-1' />
-              {`${item.first_name} ${item.last_name}`}
+              {`${item.student.first_name} ${item.student.last_name}`}
             </label>
             ))}
             </div>
