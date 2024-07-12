@@ -18,6 +18,10 @@ const Login:React.FC = () => {
       redirect: false
     })
     router.push('/dashboard')
+
+    if (res?.error) {
+      toast.error(res?.error);
+    }
   };
     
   return (

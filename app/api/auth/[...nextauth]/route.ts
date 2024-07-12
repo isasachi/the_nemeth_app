@@ -21,7 +21,7 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials) {
-          return null;
+          throw new Error('No credentials provided');
         }
 
         const { username, password } = authSchema.parse(credentials);

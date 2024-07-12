@@ -46,15 +46,18 @@ const AttendanceView: React.FC<AttendanceListProps> = ({ studentId, classroomDat
   return (
     <div>
       <h2 className='font-semibold'>Attendance</h2>
-      <ul className='flex flex-col space-y-2'>
+      <form className='flex flex-col space-y-2'>
         {classroomDates.map((date) => {
           return(
-            <li className='flex flex-row gap-2' key={date}>
-                <span>{new Date(date).toDateString()}:</span>{getStatusForDate(date)}
-            </li>
+            <label className='flex flex-row gap-2' key={date}>
+                {new Date(date).toDateString()}
+                <select name="" id="">
+                  <option value=""></option>
+                </select>
+            </label>
           )
         })}
-      </ul>
+      </form>
     </div>
   );
 };

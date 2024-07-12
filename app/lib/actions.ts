@@ -10,76 +10,76 @@ import bcrypt from 'bcryptjs';
 import { signIn } from 'next-auth/react';
 import { format } from 'path';
 
-const createClassroomSchema = z.object({
-  classroom_id: z.string(),
-  name: z.string(),
-  level: z.string(),
-  days: z.string().array(),
-  time: z.string(),
-  schedule: z.string(),
-  teacher_id: z.string(),
-  students: z.array(z.string())
-})
+// const createClassroomSchema = z.object({
+//   classroom_id: z.string(),
+//   name: z.string(),
+//   level: z.string(),
+//   days: z.string().array(),
+//   time: z.string(),
+//   schedule: z.string(),
+//   teacher_id: z.string(),
+//   students: z.array(z.string())
+// })
 
-export async function createClassroom(formData: FormData) {
+// export async function createClassroom(formData: FormData) {
 
-  const {
-    classroom_id,
-    name,
-    level,
-    days,
-    time,
-    schedule,
-    teacher_id,
-    students
-  } = createClassroomSchema.parse({
-    classroom_id: formData.get('classroom_id'),
-    name: formData.get('name'),
-    level: formData.get('level'),
-    days: formData.getAll('days'),
-    time: formData.get('time'),
-    schedule: formData.get('schedule'),
-    teacher_id: formData.get('teacher_id'),
-    students: formData.getAll('students')
-  })
+//   const {
+//     classroom_id,
+//     name,
+//     level,
+//     days,
+//     time,
+//     schedule,
+//     teacher_id,
+//     students
+//   } = createClassroomSchema.parse({
+//     classroom_id: formData.get('classroom_id'),
+//     name: formData.get('name'),
+//     level: formData.get('level'),
+//     days: formData.getAll('days'),
+//     time: formData.get('time'),
+//     schedule: formData.get('schedule'),
+//     teacher_id: formData.get('teacher_id'),
+//     students: formData.getAll('students')
+//   })
 
-  console.log(students)
+//   console.log(students)
 
-  try {
-    const classroom = await prisma.classrooms.create({
-      data: {
-        classroom_id: classroom_id,
-        name: name,
-        level: level,
-        days: days,
-        time: time,
-        schedule: schedule.split(',').map(date => {
-          return new Date(date)
-        }),
-        teacher_id: teacher_id,
-        }
-    })
+//   try {
+//     const classroom = await prisma.classrooms.create({
+//       data: {
+//         classroom_id: classroom_id,
+//         name: name,
+//         level: level,
+//         days: days,
+//         time: time,
+//         schedule: schedule.split(',').map(date => {
+//           return new Date(date)
+//         }),
+//         teacher_id: teacher_id,
+//         }
+//     })
 
-    const classroomStudents = await Promise.all(
-      students.map(async student_id => {
-        return prisma.classroomStudents.create({
-          data: {
-            classroom_id: classroom_id,
-            student_id: student_id
-          }
-        })
-      })
-    )
+//     const classroomStudents = await Promise.all(
+//       students.map(async student_id => {
+//         return prisma.classroomStudents.create({
+//           data: {
+//             classroom_id: classroom_id,
+//             student_id: student_id
+//           }
+//         })
+//       })
+//     )
 
-  } catch(error) {
-    console.log("Error during process", error)
-    return { error: "Couldn't create classroom" }
-  }
+//   } catch(error) {
+//     console.log("Error during process", error)
+//     return { error: "Couldn't create classroom" }
+//   }
 
-  revalidatePath('/dashboard/classroom');
-  revalidatePath('/');
-  redirect('/dashboard/classroom');
-}
+//   revalidatePath('/dashboard/classroom');
+//   revalidatePath('/');
+//   redirect('/dashboard/classroom');
+// }
 
 const attendanceSchema = z.object({
   date: z.string(),
@@ -293,5 +293,47 @@ export async function login(formData: FormData) {
   revalidatePath('/login')
   revalidatePath('/')
   redirect('/dashboard')
+
+}
+
+const createQuarterSchema = z.object({
+  name: z.string(),
+  start_date: z.string(),
+  end_date: z.string(),
+  break_dates: z.string()
+})
+
+export async function createQuarter(formData: FormData) {
+
+  const {
+    name,
+    start_date,
+    end_date,
+    break_dates
+  } = createQuarterSchema.parse({
+    name: formData.get('name'),
+    start_date: formData.get('start_date'),
+    end_date: formData.get('end_date'),
+    break_dates: formData.get('break')
+  })
+
+  try {
+    const quarter = await prisma.quarters.create({
+      data: {
+        name,
+        start_date: new Date(start_date),
+        end_date: new Date(end_date),
+        break: break_dates.split(',').map(date => {
+          return new Date(date)
+      })}
+    })
+  } catch (error) {
+    console.log(error)
+    return { error: "Couldn't create quarter" }
+  }
+
+  revalidatePath('/dashboard/quarter/new-quarter')
+  revalidatePath('/')
+  redirect('/dashboard/quarter')
 
 }

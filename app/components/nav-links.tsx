@@ -3,16 +3,20 @@
 import { HomeIcon,
     CalendarDaysIcon,
     UsersIcon,
-    AcademicCapIcon } from "@heroicons/react/24/outline";
+    AcademicCapIcon,
+    UserGroupIcon,
+    CheckCircleIcon } from "@heroicons/react/24/outline";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import clsx from "clsx";
 
 const links = [
     { name: 'Home', href: '/dashboard', icon: HomeIcon },
-    { name: 'Classrooms', href: '/dashboard/classroom', icon: UsersIcon },
-    { name: 'Attendance', href: '/dashboard/attendance', icon: CalendarDaysIcon },
-    { name: 'Grading', href: '/dashboard/grading', icon: AcademicCapIcon }
+    { name: 'Quarters', href: '/dashboard/quarter', icon: CalendarDaysIcon},
+    { name: 'Students', href: '/dashboard/student', icon: UsersIcon},
+    { name: 'Classrooms', href: '/dashboard/classroom', icon: UserGroupIcon },
+    { name: 'Attendance', href: '/dashboard/attendance', icon: CheckCircleIcon },
+    { name: 'Grading', href: '/dashboard/grading', icon: AcademicCapIcon },
     ];
 
 export default function Navlinks() {

@@ -47,10 +47,27 @@ const fetchClassroomsNames = async (teacher_id:string) => {
     return names.map(name => name.name);
 }
 
+const fetchteacherId = async (email:string) => {
+    const teacher_id = prisma.users.findUnique({
+        where: {
+            email: email,
+          },
+          select: {
+            teachers: {
+              select: {
+                teacher_id: true,
+              },
+            },
+          },
+    })
+    return teacher_id;
+}
+
 export {
     fetchClassrooms,
     fetchClassroomsByTeacher,
     fetchClassroomById,
     fetchClassroomByName,
-    fetchClassroomsNames
+    fetchClassroomsNames,
+    fetchteacherId
 };

@@ -45,6 +45,25 @@ model users {
   students  students?
 }
 
+model quarters {
+  quarter_id  String @id @default(uuid())
+  name String
+  start_date DateTime
+  end_date DateTime
+  break_dates DateTime[]
+
+  classroom classrooms[]
+}
+
+model classDates {
+  dates_id String @id @default(uuid())
+  date DateTime
+  type String?
+  classroom_id String
+
+  classroom classrooms @relation(fields: [classroom_id], references: [classroom_id])
+}
+
 model teachers {
   teacher_id  String    @id @default(uuid())
   first_name  String
@@ -88,11 +107,16 @@ model classrooms {
   time         String
   schedule     DateTime[]
   teacher_id   String
+  quarter_id  String
+  dates_id    String
   teacher      teachers   @relation(fields: [teacher_id], references: [teacher_id])
+  quarter      quarters   @relation(fields: [quarter_id], references: [quarter_id])
+
   
   classroomStudents classroomStudents[]
   attendance        attendance[]
   grading           grading[]
+  dates             classDates[]
 }
 
 model attendance {
